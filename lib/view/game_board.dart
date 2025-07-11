@@ -56,6 +56,10 @@ class _GameBoardState extends State<GameBoard> {
   bool blackLeftRookMoved = false;
   bool blackRightRookMoved = false;
 
+  // PAWN - En passant move
+  // Track the last double-step pawn move
+  List<int>? enPassantTargetSquare;
+
   // UNDO STATE
   List<GameState> previousStates = [];
 
@@ -258,7 +262,7 @@ class _GameBoardState extends State<GameBoard> {
           }
         }
 
-        // Pawns can kill diagonally
+        // Capture diagonally
         if (isInBoard(row + direction, col - 1) &&
             board[row + direction][col - 1] != null &&
             board[row + direction][col - 1]!.isWhite != piece.isWhite) {
@@ -269,6 +273,18 @@ class _GameBoardState extends State<GameBoard> {
             board[row + direction][col + 1]!.isWhite != piece.isWhite) {
           candidateMoves.add([row + direction, col + 1]);
         }
+
+        // EN PASSANT
+        if (enPassantTargetSquare != null) {
+          int targetRow = enPassantTargetSquare![0];
+          int targetCol = enPassantTargetSquare![1];
+
+          if (targetRow == row + direction &&
+              (targetCol == col - 1 || targetCol == col + 1)) {
+            candidateMoves.add([targetRow, targetCol]);
+          }
+        }
+
         break;
       case ChessPieceType.rook:
         // Horizontal and vertical
@@ -580,6 +596,24 @@ class _GameBoardState extends State<GameBoard> {
       }
     }
 
+    // En Passant capture
+    if (selectedPiece!.type == ChessPieceType.pawn &&
+        enPassantTargetSquare != null &&
+        newRow == enPassantTargetSquare![0] &&
+        newCol == enPassantTargetSquare![1]) {
+      int capturedPawnRow = selectedPiece!.isWhite ? newRow + 1 : newRow - 1;
+      var capturedPawn = board[capturedPawnRow][newCol];
+      board[capturedPawnRow][newCol] = null;
+
+      if (capturedPawn != null) {
+        if (capturedPawn.isWhite) {
+          whitePiecesTaken.add(capturedPawn);
+        } else {
+          blackPiecesTaken.add(capturedPawn);
+        }
+      }
+    }
+
     // If the new spot has an enemy piece
     if (board[newRow][newCol] != null) {
       // add the capture piece to the appropriate list
@@ -626,6 +660,14 @@ class _GameBoardState extends State<GameBoard> {
       selectedRow = newRow;
       selectedCol = newCol;
       await _showPromotionDialog();
+    }
+
+    // Set en passant sqare (if pawn moved 2 steps forward)
+    if (selectedPiece!.type == ChessPieceType.pawn &&
+        (selectedRow - newRow).abs() == 2) {
+      enPassantTargetSquare = [(selectedRow + newRow) ~/ 2, selectedCol];
+    } else {
+      enPassantTargetSquare = null; // Reset if not a 2 step pawn move
     }
 
     // See if any kings are under attack
