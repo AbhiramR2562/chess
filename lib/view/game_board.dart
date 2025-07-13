@@ -1120,7 +1120,7 @@ class _GameBoardState extends State<GameBoard> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 93, 100, 135),
+        backgroundColor: Color(0xFFFAFAFA),
         appBar: AppBar(
           backgroundColor: Colors.black,
           iconTheme: IconThemeData(color: Colors.white),

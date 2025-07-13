@@ -97,12 +97,13 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       // Glassmorphic effect
                       // Opacity value (0-255),
+                      // Opacity value (0-255),
                       color: Color.fromARGB(
-                        120,
-                        0,
-                        0,
-                        0,
-                      ), // Adjust transparency
+                        180,
+                        15,
+                        15,
+                        15,
+                      ), // dark translucent
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: Color.fromARGB(
@@ -224,12 +225,12 @@ class _HomePageState extends State<HomePage> {
                         decoration: BoxDecoration(
                           // Glassmorphic effect
                           // Opacity value (0-255),
-                          color: const Color.fromARGB(
-                            255,
-                            28,
-                            28,
-                            28,
-                          ), // Adjust transparency
+                          color: Color.fromARGB(
+                            180,
+                            15,
+                            15,
+                            15,
+                          ), // dark translucent
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: Color.fromARGB(

@@ -22,7 +22,7 @@ class MyHomeButton extends StatelessWidget {
         decoration: BoxDecoration(
           // Glassmorphic effect
           // Opacity value (0-255),
-          color: Color.fromARGB(120, 0, 0, 0), // Adjust transparency
+          color: Color.fromARGB(180, 15, 15, 15), // dark translucent
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: Color.fromARGB(125, 255, 255, 255), // 125 = ~50% opacity
