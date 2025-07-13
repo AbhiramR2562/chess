@@ -877,6 +877,7 @@ class _GameBoardState extends State<GameBoard> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        backgroundColor: Color.fromARGB(255, 196, 196, 196),
         title: Text("Promote Pawn"),
         content: Column(
           mainAxisSize: MainAxisSize.min,

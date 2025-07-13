@@ -1,5 +1,7 @@
 import 'package:chess/data/chess_piece_list.dart';
 import 'package:chess/view/game_board.dart';
+import 'package:chess/view/learn_chess_page.dart';
+import 'package:chess/view/settings_page.dart';
 import 'package:chess/widgets/my_home_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -184,13 +186,19 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   MyHomeButton(
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LearnChessPage()),
+                    ),
                     imagePath: 'assets/images/learn_chess_icon.svg',
                     text: "Learn Chess",
                   ),
                   SizedBox(height: 50),
                   MyHomeButton(
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SettingsPage()),
+                    ),
                     imagePath: 'assets/images/settings_icon.svg',
                     text: "Settings",
                   ),
