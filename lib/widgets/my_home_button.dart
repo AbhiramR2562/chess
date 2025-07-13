@@ -17,26 +17,37 @@ class MyHomeButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 52,
-        width: MediaQuery.of(context).size.width * 0.8,
+        height: 75,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: const Color(0xFFEEEEEE),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 40),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-
-            children: [
-              SvgPicture.asset(imagePath),
-              SizedBox(width: 45),
-              Text(
-                text,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
-              ),
-            ],
+          // Glassmorphic effect
+          // Opacity value (0-255),
+          color: Color.fromARGB(120, 0, 0, 0), // Adjust transparency
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Color.fromARGB(125, 255, 255, 255), // 125 = ~50% opacity
+            width: 1,
           ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              imagePath,
+              colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            ),
+            Container(width: MediaQuery.of(context).size.width * 0.1),
+            Text(
+              text,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 10),
+            Icon(Icons.arrow_right, color: Colors.white),
+          ],
         ),
       ),
     );

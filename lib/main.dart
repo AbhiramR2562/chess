@@ -1,6 +1,4 @@
-import 'package:chess/view/game_board.dart';
 import 'package:chess/view/home_page.dart';
-import 'package:chess/view/splash_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {

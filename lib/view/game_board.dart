@@ -1120,23 +1120,25 @@ class _GameBoardState extends State<GameBoard> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 54, 60, 85),
+        backgroundColor: const Color.fromARGB(255, 93, 100, 135),
         appBar: AppBar(
+          backgroundColor: Colors.black,
+          iconTheme: IconThemeData(color: Colors.white),
           actions: [
             // Undo
             IconButton(
               onPressed: undoMove,
-              icon: Icon(Icons.undo, color: Colors.black),
+              icon: Icon(Icons.undo, color: Colors.white),
             ),
             // Reso
             IconButton(
               onPressed: redoMove,
-              icon: Icon(Icons.redo, color: Colors.black),
+              icon: Icon(Icons.redo, color: Colors.white),
             ),
             // Restart
             IconButton(
               onPressed: restartGame,
-              icon: Icon(Icons.restart_alt, color: Colors.black),
+              icon: Icon(Icons.restart_alt, color: Colors.white),
             ),
           ],
         ),

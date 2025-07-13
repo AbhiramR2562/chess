@@ -1,3 +1,4 @@
+import 'package:chess/data/chess_piece_list.dart';
 import 'package:chess/view/game_board.dart';
 import 'package:chess/widgets/my_home_button.dart';
 import 'package:flutter/material.dart';
@@ -15,72 +16,254 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            height: 200,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white.withOpacity(0.5),
-                  spreadRadius: 5,
-                  blurRadius: 15,
-                  offset: Offset(0, 0),
-                ),
-              ],
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Stack(
+          children: [
+            SizedBox.expand(
+              child: Image.asset(
+                'assets/images/home_page_background_image.jpg',
+                fit: BoxFit.cover,
+              ),
             ),
-            child: Image.asset('assets/images/chess_top_image.jpg'),
-          ),
-          Column(
-            children: [
-              MyHomeButton(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => GameBoard()),
+            // Head
+            Positioned(
+              left: 0,
+              right: 0,
+
+              top: 60,
+              child: Container(
+                height: 90,
+                width: MediaQuery.of(context).size.width * 0.5,
+                decoration: BoxDecoration(
+                  // Glassmorphic effect
+                  // Opacity value (0-255),
+                  color: Color.fromARGB(120, 0, 0, 0), // Adjust transparency
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Color.fromARGB(
+                      125,
+                      255,
+                      255,
+                      255,
+                    ), // 125 = ~50% opacity
+                    width: 1,
+                  ),
                 ),
-                imagePath: 'assets/images/2_player_icon.svg',
-                text: "2 Player",
+                child: Column(
+                  children: [
+                    SizedBox(height: 10),
+                    Text(
+                      "Power in Every Piece",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Container(
+                      width: 180,
+                      child: Text(
+                        "Control the board, control the game own your space.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 40),
-              MyHomeButton(
-                onTap: () {},
-                imagePath: 'assets/images/learn_chess_icon.svg',
-                text: "Learn Chess",
-              ),
-              SizedBox(height: 40),
-              MyHomeButton(
-                onTap: () {},
-                imagePath: 'assets/images/settings_icon.svg',
-                text: "Settings",
-              ),
-            ],
-          ),
-          Container(
-            height: 200,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(30),
             ),
-            // child: ClipRRect(
-            //   borderRadius: BorderRadius.circular(30),
-            //   child: Align(
-            //     alignment: Alignment.bottomCenter,
-            //     // heightFactor: 0.7, // Show 70% from top
-            //     child: Image.asset(
-            //       'assets/images/chess_bottum_image.png',
-            //       fit: BoxFit.scaleDown,
-            //       height: 200,
-            //       width: MediaQuery.of(context).size.width,
-            //     ),
-            //   ),
-            // ),
-          ),
-        ],
+            Positioned(
+              top: 200,
+              left: 0,
+              child: Row(
+                children: [
+                  Container(
+                    height: 200,
+                    width: MediaQuery.of(context).size.width * 0.445,
+                    child: Image.asset(
+                      'assets/images/3D_Fantasy.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    height: 200,
+                    width: MediaQuery.of(context).size.width * 0.45,
+                    decoration: BoxDecoration(
+                      // Glassmorphic effect
+                      // Opacity value (0-255),
+                      color: Color.fromARGB(
+                        120,
+                        0,
+                        0,
+                        0,
+                      ), // Adjust transparency
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Color.fromARGB(
+                          125,
+                          255,
+                          255,
+                          255,
+                        ), // 125 = ~50% opacity
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(height: 37),
+                        SvgPicture.asset(
+                          'assets/images/2_player_icon.svg',
+                          colorFilter: ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          "Two",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "Player Mode",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GameBoard(),
+                            ),
+                          ),
+                          child: Container(
+                            height: 40,
+                            width: MediaQuery.of(context).size.width * 0.2,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Play",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Positioned(
+              top: 460,
+              left: 0,
+              right: 0,
+              child: Column(
+                children: [
+                  MyHomeButton(
+                    onTap: () {},
+                    imagePath: 'assets/images/learn_chess_icon.svg',
+                    text: "Learn Chess",
+                  ),
+                  SizedBox(height: 50),
+                  MyHomeButton(
+                    onTap: () {},
+                    imagePath: 'assets/images/settings_icon.svg',
+                    text: "Settings",
+                  ),
+                ],
+              ),
+            ),
+
+            // Card Slide
+            Positioned(
+              bottom: 20,
+              child: Container(
+                height: 80,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 6,
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  itemBuilder: (context, index) {
+                    final piece = chessPieces[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => piece.detailPage,
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 100,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          // Glassmorphic effect
+                          // Opacity value (0-255),
+                          color: const Color.fromARGB(
+                            255,
+                            28,
+                            28,
+                            28,
+                          ), // Adjust transparency
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Color.fromARGB(
+                              125,
+                              255,
+                              255,
+                              255,
+                            ), // 125 = ~50% opacity
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(piece.imageUrl, height: 30),
+                            const SizedBox(height: 4),
+                            Text(
+                              piece.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
