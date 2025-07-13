@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:chess/view/home_page.dart';
 import 'package:flutter/material.dart';
 
 class SplashPage extends StatefulWidget {
@@ -19,6 +22,14 @@ class _SplashPageState extends State<SplashPage>
       vsync: this,
       duration: Duration(seconds: 3),
     )..repeat(); // Make this rotation loop continously
+
+    // After a delay go to the home page
+    Timer(Duration(seconds: 3), () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    });
   }
 
   @override
