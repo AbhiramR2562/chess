@@ -3,7 +3,6 @@ import 'package:chess/components/game_state.dart';
 import 'package:chess/components/piece.dart';
 import 'package:chess/components/square.dart';
 import 'package:chess/helper/helper_methods.dart';
-import 'package:chess/values/colors.dart';
 import 'package:flutter/material.dart';
 
 class GameBoard extends StatefulWidget {
@@ -55,6 +54,10 @@ class _GameBoardState extends State<GameBoard> {
   bool whiteRightRookMoved = false;
   bool blackLeftRookMoved = false;
   bool blackRightRookMoved = false;
+
+  // fivefold repetition draw
+  List<List<int>> whiteKingHistory = [];
+  List<List<int>> blackKingHistory = [];
 
   // PAWN - En passant move
   // Track the last double-step pawn move
@@ -545,8 +548,6 @@ class _GameBoardState extends State<GameBoard> {
         whiteKingPosition: List.from(whiteKingPosition),
         blackKingPosition: List.from(blackKingPosition),
         isWhiteTurn: isWhiteTurn,
-
-        // Add castling flags here:
         whiteKingMoved: whiteKingMoved,
         blackKingMoved: blackKingMoved,
         whiteLeftRookMoved: whiteLeftRookMoved,
@@ -556,55 +557,44 @@ class _GameBoardState extends State<GameBoard> {
       ),
     );
 
-    // check if the piece king moved is a king and attempting to castle
-    bool isCastlingMove = false;
-    if (selectedPiece!.type == ChessPieceType.king) {
-      // White King castling
-      if (selectedPiece!.isWhite && selectedRow == 7 && selectedCol == 4) {
+    // ✅ Keep a local reference to avoid null crash
+    ChessPiece movingPiece = selectedPiece!;
+
+    // Castling
+    if (movingPiece.type == ChessPieceType.king) {
+      if (movingPiece.isWhite && selectedRow == 7 && selectedCol == 4) {
         if (newRow == 7 && newCol == 6) {
-          // white king-side castling
           board[7][5] = board[7][7];
           board[7][7] = null;
-          isCastlingMove = true;
           whiteRightRookMoved = true;
         } else if (newRow == 7 && newCol == 2) {
-          // white queen - side castling
           board[7][3] = board[7][0];
           board[7][0] = null;
-          isCastlingMove = true;
           whiteLeftRookMoved = true;
         }
         whiteKingMoved = true;
-      }
-
-      // Black king castling
-      if (!selectedPiece!.isWhite && selectedRow == 0 && selectedCol == 4) {
+      } else if (!movingPiece.isWhite && selectedRow == 0 && selectedCol == 4) {
         if (newRow == 0 && newCol == 6) {
-          // Black king - side castling
           board[0][5] = board[0][7];
           board[0][7] = null;
-          isCastlingMove = true;
           blackRightRookMoved = true;
         } else if (newRow == 0 && newCol == 2) {
-          // Black queen - side castling
           board[0][3] = board[0][0];
           board[0][0] = null;
-          isCastlingMove = true;
           blackLeftRookMoved = true;
         }
         blackKingMoved = true;
       }
     }
 
-    // En Passant capture
-    if (selectedPiece!.type == ChessPieceType.pawn &&
+    // En Passant
+    if (movingPiece.type == ChessPieceType.pawn &&
         enPassantTargetSquare != null &&
         newRow == enPassantTargetSquare![0] &&
         newCol == enPassantTargetSquare![1]) {
-      int capturedPawnRow = selectedPiece!.isWhite ? newRow + 1 : newRow - 1;
+      int capturedPawnRow = movingPiece.isWhite ? newRow + 1 : newRow - 1;
       var capturedPawn = board[capturedPawnRow][newCol];
       board[capturedPawnRow][newCol] = null;
-
       if (capturedPawn != null) {
         if (capturedPawn.isWhite) {
           whitePiecesTaken.add(capturedPawn);
@@ -614,9 +604,8 @@ class _GameBoardState extends State<GameBoard> {
       }
     }
 
-    // If the new spot has an enemy piece
+    // Capture piece
     if (board[newRow][newCol] != null) {
-      // add the capture piece to the appropriate list
       var capturedPiece = board[newRow][newCol];
       if (capturedPiece!.isWhite) {
         whitePiecesTaken.add(capturedPiece);
@@ -625,22 +614,24 @@ class _GameBoardState extends State<GameBoard> {
       }
     }
 
-    // move the piece and clear the old post
-    board[newRow][newCol] = selectedPiece;
+    // Move piece
+    board[newRow][newCol] = movingPiece;
     board[selectedRow][selectedCol] = null;
 
-    // Update king's position
-    if (selectedPiece!.type == ChessPieceType.king) {
-      if (selectedPiece!.isWhite) {
+    // King position & history
+    if (movingPiece.type == ChessPieceType.king) {
+      if (movingPiece.isWhite) {
         whiteKingPosition = [newRow, newCol];
+        whiteKingHistory.add([newRow, newCol]);
       } else {
         blackKingPosition = [newRow, newCol];
+        blackKingHistory.add([newRow, newCol]);
       }
     }
 
-    // Update rook move flags if a rook is moved (to display future castling)
-    if (selectedPiece!.type == ChessPieceType.rook) {
-      if (selectedPiece!.isWhite) {
+    // Rook flags
+    if (movingPiece.type == ChessPieceType.rook) {
+      if (movingPiece.isWhite) {
         if (selectedRow == 7 && selectedCol == 0) whiteLeftRookMoved = true;
         if (selectedRow == 7 && selectedCol == 7) whiteRightRookMoved = true;
       } else {
@@ -650,73 +641,101 @@ class _GameBoardState extends State<GameBoard> {
     }
 
     // Pawn promotion
-    // Check if the piece is a pawn and reched promotion row
     bool isPromotion =
-        selectedPiece!.type == ChessPieceType.pawn &&
-        (newRow == 0 || newRow == 7);
-
-    // If Promotion, show dialog before clearing selectedPiece
+        movingPiece.type == ChessPieceType.pawn && (newRow == 0 || newRow == 7);
     if (isPromotion) {
       selectedRow = newRow;
       selectedCol = newCol;
       await _showPromotionDialog();
     }
 
-    // Set en passant sqare (if pawn moved 2 steps forward)
-    if (selectedPiece!.type == ChessPieceType.pawn &&
+    // En Passant target square
+    if (movingPiece.type == ChessPieceType.pawn &&
         (selectedRow - newRow).abs() == 2) {
       enPassantTargetSquare = [(selectedRow + newRow) ~/ 2, selectedCol];
     } else {
-      enPassantTargetSquare = null; // Reset if not a 2 step pawn move
+      enPassantTargetSquare = null;
     }
 
-    // See if any kings are under attack
-    if (isKingInCheck(!isWhiteTurn)) {
-      checkeStatus = true;
-    } else {
-      checkeStatus = false;
+    // Check status
+    checkeStatus = isKingInCheck(!isWhiteTurn);
+
+    // ✅ Check for special draw conditions before clearing selection
+    if (isCheckMate(!isWhiteTurn)) {
+      await _showAlert("CHECK MATE!", "Game over.");
+      resetGame();
+      return;
     }
 
-    // Clear the selection
+    if (isDraw(!isWhiteTurn)) {
+      await _showAlert("DRAW!", "It's a stalemate.");
+      resetGame();
+      return;
+    }
+
+    // Change turn
+    isWhiteTurn = !isWhiteTurn;
+
+    // Fivefold repetition (for kings)
+    if ((whiteKingHistory
+                .where(
+                  (pos) =>
+                      pos[0] == whiteKingPosition[0] &&
+                      pos[1] == whiteKingPosition[1],
+                )
+                .length >=
+            5) ||
+        (blackKingHistory
+                .where(
+                  (pos) =>
+                      pos[0] == blackKingPosition[0] &&
+                      pos[1] == blackKingPosition[1],
+                )
+                .length >=
+            5)) {
+      await _showAlert("DRAW!", "Fivefold repetition detected.");
+      resetGame();
+      return;
+    }
+
+    // Only kings left
+    bool onlyKingsLeft = true;
+    for (var row in board) {
+      for (var piece in row) {
+        if (piece != null && piece.type != ChessPieceType.king) {
+          onlyKingsLeft = false;
+          break;
+        }
+      }
+      if (!onlyKingsLeft) break;
+    }
+    if (onlyKingsLeft) {
+      await _showAlert("DRAW!", "Inefficient material - Only kings remain.");
+      resetGame();
+      return;
+    }
+
+    // ✅ Now clear the selection safely
     setState(() {
       selectedPiece = null;
       selectedRow = -1;
       selectedCol = -1;
       validMoves = [];
     });
+  }
 
-    // Check if it's check mate
-    if (isCheckMate(!isWhiteTurn)) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: const Text("CHECK MATE!"),
-          actions: [
-            // Buttons
-            TextButton(onPressed: resetGame, child: const Text("Play Again")),
-          ],
-        ),
-      );
-    }
-
-    // Check if it's draw
-    if (isDraw(!isWhiteTurn)) {
-      await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: Text("DRAW!"),
-          content: Text("It's a stalemate."),
-          actions: [
-            TextButton(onPressed: resetGame, child: Text("Restart Game")),
-          ],
-        ),
-      );
-    }
-
-    // Change turns
-    isWhiteTurn = !isWhiteTurn;
+  Future<void> _showAlert(String title, String message) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(onPressed: resetGame, child: Text("Restart Game")),
+        ],
+      ),
+    );
   }
 
   // IS KING IN CHECK
